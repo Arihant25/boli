@@ -552,6 +552,7 @@ main {
 }
 .review-feedback .fb-right { color: var(--good); }
 .review-feedback .fb-wrong { color: var(--bad); }
+.review-feedback .fb-meaning { color: var(--ink-soft); font-size: 0.9rem; margin-top: 0.25rem; }
 .review-feedback b.script { font-family: var(--font-glyph); }
 .next-row { margin-top: 0.9rem; }
 

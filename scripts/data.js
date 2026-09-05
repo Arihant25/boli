@@ -254,6 +254,96 @@
     ]
   };
 
+  // Real words for the reading lessons. Kept deliberately simple: common,
+  // everyday words with no conjuncts, so each one decodes as a plain run of
+  // consonants and vowel signs the path has already taught. A reading
+  // lesson only shows a word once every consonant in it has been learned.
+  //   w  the word, r  how it reads, m  what it means
+  var words = {
+    odia: [
+      { w: 'ଘର', r: 'ghara', m: 'house' },
+      { w: 'ପାଣି', r: 'paani', m: 'water' },
+      { w: 'ମା', r: 'maa', m: 'mother' },
+      { w: 'ବାପା', r: 'baapaa', m: 'father' },
+      { w: 'ଭାତ', r: 'bhaata', m: 'rice' },
+      { w: 'ହାତ', r: 'haata', m: 'hand' },
+      { w: 'ପାଦ', r: 'paada', m: 'foot' },
+      { w: 'ଆଖି', r: 'aakhi', m: 'eye' },
+      { w: 'କାନ', r: 'kaana', m: 'ear' },
+      { w: 'ନାକ', r: 'naaka', m: 'nose' },
+      { w: 'ଦିନ', r: 'dina', m: 'day' },
+      { w: 'ରାତି', r: 'raati', m: 'night' },
+      { w: 'ନାମ', r: 'naama', m: 'name' },
+      { w: 'ଜଳ', r: 'jala', m: 'water' },
+      { w: 'ଫୁଲ', r: 'phula', m: 'flower' },
+      { w: 'ଫଳ', r: 'phala', m: 'fruit' },
+      { w: 'ମାଛ', r: 'maachha', m: 'fish' },
+      { w: 'ଗାଈ', r: 'gaaii', m: 'cow' },
+      { w: 'କୁକୁର', r: 'kukura', m: 'dog' },
+      { w: 'ପାଠ', r: 'paatha', m: 'lesson' },
+      { w: 'ବହି', r: 'bahi', m: 'book' },
+      { w: 'ବାଟ', r: 'baata', m: 'path' },
+      { w: 'ପବନ', r: 'pabana', m: 'wind' },
+      { w: 'ଦୁଧ', r: 'dudha', m: 'milk' },
+      { w: 'ଲୁଣ', r: 'luna', m: 'salt' },
+      { w: 'ପିଲା', r: 'pilaa', m: 'child' },
+      { w: 'ହରିଣ', r: 'harina', m: 'deer' }
+    ],
+    telugu: [
+      { w: 'నీరు', r: 'niiru', m: 'water' },
+      { w: 'పాలు', r: 'paalu', m: 'milk' },
+      { w: 'గది', r: 'gadi', m: 'room' },
+      { w: 'బడి', r: 'badi', m: 'school' },
+      { w: 'కాకి', r: 'kaaki', m: 'crow' },
+      { w: 'చేప', r: 'cheepa', m: 'fish' },
+      { w: 'పులి', r: 'puli', m: 'tiger' },
+      { w: 'మేక', r: 'meeka', m: 'goat' },
+      { w: 'నది', r: 'nadi', m: 'river' },
+      { w: 'అడవి', r: 'adavi', m: 'forest' },
+      { w: 'ఆకు', r: 'aaku', m: 'leaf' },
+      { w: 'చెవి', r: 'chevi', m: 'ear' },
+      { w: 'నోరు', r: 'nooru', m: 'mouth' },
+      { w: 'కాలు', r: 'kaalu', m: 'leg' },
+      { w: 'తల', r: 'tala', m: 'head' },
+      { w: 'రోజు', r: 'rooju', m: 'day' },
+      { w: 'పేరు', r: 'peeru', m: 'name' },
+      { w: 'ఊరు', r: 'uuru', m: 'village' },
+      { w: 'గాలి', r: 'gaali', m: 'wind' },
+      { w: 'వాన', r: 'vaana', m: 'rain' },
+      { w: 'చీర', r: 'chiira', m: 'saree' },
+      { w: 'గుడి', r: 'gudi', m: 'temple' },
+      { w: 'కారు', r: 'kaaru', m: 'car' },
+      { w: 'బాట', r: 'baata', m: 'path' }
+    ],
+    punjabi: [
+      { w: 'ਘਰ', r: 'ghar', m: 'house' },
+      { w: 'ਪਾਣੀ', r: 'paani', m: 'water' },
+      { w: 'ਮਾਤਾ', r: 'maataa', m: 'mother' },
+      { w: 'ਪਿਤਾ', r: 'pitaa', m: 'father' },
+      { w: 'ਦਿਨ', r: 'din', m: 'day' },
+      { w: 'ਰਾਤ', r: 'raat', m: 'night' },
+      { w: 'ਨਾਮ', r: 'naam', m: 'name' },
+      { w: 'ਕਿਤਾਬ', r: 'kitaab', m: 'book' },
+      { w: 'ਕਮਲ', r: 'kamal', m: 'lotus' },
+      { w: 'ਸਿਰ', r: 'sir', m: 'head' },
+      { w: 'ਪੈਰ', r: 'pair', m: 'foot' },
+      { w: 'ਦਾਲ', r: 'daal', m: 'lentils' },
+      { w: 'ਰੋਟੀ', r: 'roti', m: 'bread' },
+      { w: 'ਚਾਹ', r: 'chaah', m: 'tea' },
+      { w: 'ਕਾਰ', r: 'kaar', m: 'car' },
+      { w: 'ਦੁਕਾਨ', r: 'dukaan', m: 'shop' },
+      { w: 'ਸੂਰਜ', r: 'sooraj', m: 'sun' },
+      { w: 'ਤਾਰਾ', r: 'taaraa', m: 'star' },
+      { w: 'ਫਲ', r: 'phal', m: 'fruit' },
+      { w: 'ਕੁਰਸੀ', r: 'kursi', m: 'chair' },
+      { w: 'ਹਵਾ', r: 'hawaa', m: 'wind' },
+      { w: 'ਲੜਕਾ', r: 'larkaa', m: 'boy' },
+      { w: 'ਲੜਕੀ', r: 'larki', m: 'girl' },
+      { w: 'ਸੜਕ', r: 'sarak', m: 'road' },
+      { w: 'ਘੋੜਾ', r: 'ghoraa', m: 'horse' }
+    ]
+  };
+
   var groupMeta = [
     { key: 'vowels', label: 'Vowels', note: 'The full letters that stand on their own.' },
     { key: 'consonants', label: 'Consonants', note: 'Each one carries a built-in a.' },
@@ -295,6 +385,7 @@
     languages: languages,
     groups: groupMeta,
     chars: chars,
+    words: words,
     all: all,
     lang: function (id) {
       return languages.filter(function (l) { return l.id === id; })[0];

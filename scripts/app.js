@@ -368,7 +368,7 @@
         h('div', { class: 'label' }, ['Reading']),
         h('div', { class: 'teach-glyph script', style: 'font-size:3.4rem' }, [step.sample]),
         h('div', { class: 'detail-hint', style: 'margin-top:1rem' }, [
-          'Sound out each letter in turn, then run them together. Pick the reading that matches.'
+          'Real words now. Sound out the letters, run them together, and pick how the word reads.'
         ]),
         h('div', { class: 'detail-actions' }, [
           h('button', { class: 'btn primary block', onclick: advance }, ['Begin'])
@@ -393,10 +393,11 @@
 
     function showRead(item) {
       renderChoice({
-        ask: 'Read this',
+        ask: 'Read this word',
         glyph: item.glyph,
         options: item.options,
         answer: item.roman,
+        meaning: item.meaning,
         onGrade: function (right) {
           Store.logReview(right);
           Store.saveProgress();
@@ -439,6 +440,7 @@
             ? h('span', { class: 'fb-right' }, ['Right.'])
             : h('span', { class: 'fb-wrong', html:
                 '<b class="script">' + cfg.glyph + '</b> reads ' + cfg.answer + '.' }));
+          if (cfg.meaning) feedback.appendChild(h('div', { class: 'fb-meaning' }, ['means ' + cfg.meaning]));
 
           nextRow.classList.remove('hidden');
           clear(nextRow);
@@ -479,7 +481,7 @@
   function buildSteps(lesson, pool) {
     var steps = [];
     if (lesson.type === 'reading') {
-      var set = Lessons.makeReadingSet(lesson.consonants, lesson.matras, 8);
+      var set = Lessons.makeWordSet(lesson.lang, lesson.consonants, 8);
       steps.push({ kind: 'intro', sample: set.length ? set[0].glyph : '' });
       set.forEach(function (item) { steps.push({ kind: 'read', item: item }); });
       return steps;

@@ -5,8 +5,8 @@
  * lays the script out as an ordered path of small lessons. A lesson
  * teaches a handful of new letters, one at a time, then drills them.
  * Once enough consonants and vowel signs are known, reading lessons
- * unlock: the learner sounds out short built-up syllables and words
- * made only from letters they have already met.
+ * unlock: the learner reads real, everyday words made only from letters
+ * they have already met.
  *
  * The path is built the same way every time, so a lesson's position is
  * its identity and completed lessons stay completed across reloads.
@@ -15,13 +15,13 @@
   'use strict';
 
   var DATA = window.BOLI_DATA;
+  var MIN_WORDS = 4;   // a reading lesson needs at least this many readable words
 
   function chunk(arr, size) {
     var out = [];
     for (var i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
     return out;
   }
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   function shuffle(a) {
     a = a.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -31,57 +31,38 @@
     return a;
   }
 
-  // One syllable: a consonant carrying a vowel sound (its own built-in a,
-  // or a vowel sign). Returns the written form and how it reads.
-  function syllable(consonants, matras) {
-    var c = pick(consonants);
-    var m = pick(matras);
-    return { glyph: c.glyph + m.sign, roman: c.base + m.vowel };
-  }
-
-  // A short readable string of two or three syllables.
-  function word(consonants, matras, syllableCount) {
-    var glyph = '', roman = '';
-    for (var i = 0; i < syllableCount; i++) {
-      var s = syllable(consonants, matras);
-      glyph += s.glyph;
-      roman += s.roman;
-    }
-    return { glyph: glyph, roman: roman };
-  }
-
-  // A set of reading prompts, each with four romanised choices. Every
-  // prompt is built only from the letters the learner has reached.
-  function makeReadingSet(consonants, matras, count) {
-    // Keep the built words readable: skip letters that almost never start
-    // a syllable (nga, nya) and the vocalic ru sign, and let the plain
-    // built-in a turn up more often, the way it does in real words.
-    var cons = consonants.filter(function (c) { return c.base !== 'ng' && c.base !== 'ny'; });
-    if (cons.length < 2) cons = consonants;
-    var mats = matras.filter(function (m) { return m.vowel !== 'ru'; });
-    var bare = mats.filter(function (m) { return m.vowel === 'a'; });
-    var weighted = mats.concat(bare, bare);   // the inherent a, weighted up
-    consonants = cons;
-    matras = weighted;
-
-    var items = [], used = {}, guard = 0;
-    while (items.length < count && guard++ < count * 30) {
-      var n = 2 + (Math.random() < 0.35 ? 1 : 0);
-      var w = word(consonants, matras, n);
-      if (used[w.roman]) continue;
-      used[w.roman] = true;
-      items.push(w);
-    }
-    items.forEach(function (it) {
-      var opts = [it.roman], g = 0;
-      var len = Math.max(2, Math.min(3, Math.round(it.roman.length / 3)));
-      while (opts.length < 4 && g++ < 80) {
-        var d = word(consonants, matras, len).roman;
-        if (opts.indexOf(d) === -1) opts.push(d);
-      }
-      it.options = shuffle(opts);
+  // Which of a language's consonants appear in a word. Cached on the word.
+  function consonantsOf(langId, word) {
+    if (word._cons) return word._cons;
+    var found = [];
+    DATA.chars[langId].consonants.forEach(function (c) {
+      if (word.w.indexOf(c.glyph) !== -1) found.push(c.glyph);
     });
-    return items;
+    word._cons = found;
+    return found;
+  }
+
+  // The words a learner can already read: every consonant in them is known.
+  function readableWords(langId, learnedConsonants) {
+    var known = {};
+    learnedConsonants.forEach(function (c) { known[c.glyph] = true; });
+    return (DATA.words[langId] || []).filter(function (word) {
+      return consonantsOf(langId, word).every(function (g) { return known[g]; });
+    });
+  }
+
+  // A reading set: real words with four romanised choices each.
+  function makeWordSet(langId, learnedConsonants, count) {
+    var pool = readableWords(langId, learnedConsonants);
+    var chosen = shuffle(pool).slice(0, count);
+    var romans = pool.map(function (w) { return w.r; });
+    return chosen.map(function (word) {
+      var opts = [word.r];
+      shuffle(romans).forEach(function (r) {
+        if (opts.length < 4 && opts.indexOf(r) === -1) opts.push(r);
+      });
+      return { glyph: word.w, roman: word.r, meaning: word.m, options: shuffle(opts) };
+    });
   }
 
   // Build the ordered path for a language.
@@ -93,15 +74,10 @@
 
     var lessons = [];
     var learnedConsonants = [];
-    var matrasKnown = false;
 
     vowelSets.forEach(function (set, i) {
-      lessons.push({
-        type: 'letters',
-        title: i === 0 ? 'Vowels' : 'More vowels',
-        subtitle: 'The standalone vowels',
-        items: set
-      });
+      lessons.push({ type: 'letters', title: i === 0 ? 'Vowels' : 'More vowels',
+        subtitle: 'The standalone vowels', items: set });
     });
 
     // The first consonant set, so ka exists before the vowel signs.
@@ -111,56 +87,42 @@
     }
 
     matraSets.forEach(function (set, i) {
-      lessons.push({
-        type: 'letters',
-        title: i === 0 ? 'Vowel signs' : 'More signs',
-        subtitle: 'Signs that ride on a consonant',
-        items: set
-      });
+      lessons.push({ type: 'letters', title: i === 0 ? 'Vowel signs' : 'More signs',
+        subtitle: 'Signs that ride on a consonant', items: set });
     });
-    matrasKnown = matraSets.length > 0;
+    var matrasKnown = matraSets.length > 0;
 
     for (var k = 1; k < consonantSets.length; k++) {
       learnedConsonants = learnedConsonants.concat(consonantSets[k]);
       lessons.push(consonantLesson(consonantSets[k]));
-      // After the learner has some consonants and the signs, slip in a
-      // reading lesson every couple of new sets.
-      if (matrasKnown && k % 2 === 0) {
-        lessons.push(readingLesson(learnedConsonants, g.matras));
+      // Slip in a reading lesson whenever enough real words have become
+      // readable with the letters learned so far.
+      if (matrasKnown && k % 2 === 0 && readableWords(langId, learnedConsonants).length >= MIN_WORDS) {
+        lessons.push(readingLesson(langId, learnedConsonants));
       }
     }
-    if (matrasKnown) lessons.push(readingLesson(learnedConsonants, g.matras));
+    // A closing reading lesson over the whole word bank, unless the loop
+    // just added one at the very end.
+    if (matrasKnown && readableWords(langId, learnedConsonants).length >= MIN_WORDS &&
+        lessons[lessons.length - 1].type !== 'reading') {
+      lessons.push(readingLesson(langId, learnedConsonants));
+    }
 
-    lessons.forEach(function (l, i) {
-      l.index = i;
-      l.id = langId + '#' + i;
-    });
+    lessons.forEach(function (l, i) { l.index = i; l.id = langId + '#' + i; });
     return lessons;
   }
 
   function consonantLesson(set) {
-    return {
-      type: 'letters',
-      title: set[0].roman + ' … ' + set[set.length - 1].roman,
-      subtitle: 'New consonants',
-      items: set
-    };
+    return { type: 'letters', title: set[0].roman + ' … ' + set[set.length - 1].roman,
+      subtitle: 'New consonants', items: set };
   }
 
   // Reading lessons keep a snapshot of what was learnable at that point;
-  // the actual prompts are generated fresh each time it is played.
-  function readingLesson(consonants, matras) {
-    return {
-      type: 'reading',
-      title: 'Reading',
-      subtitle: 'Sound out the letters you know',
-      consonants: consonants.slice(),
-      matras: matras.slice()
-    };
+  // the actual words are drawn fresh each time it is played.
+  function readingLesson(langId, consonants) {
+    return { type: 'reading', title: 'Reading', subtitle: 'Read real words',
+      lang: langId, consonants: consonants.slice() };
   }
 
-  window.BoliLessons = {
-    build: build,
-    makeReadingSet: makeReadingSet
-  };
+  window.BoliLessons = { build: build, makeWordSet: makeWordSet };
 })();
