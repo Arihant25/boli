@@ -25,10 +25,12 @@ Three scripts are supported to begin with: **Odia**, **Telugu**, and
 - **All letters at a glance.** The browse view shows the whole script on
   one page. Tap any letter to hear it; a dot marks what you have started
   and mastered.
-- **Audio.** Pronunciation is fetched from a free, keyless text-to-speech
-  service when you tap listen. Telugu and Punjabi use their own voices;
-  Odia is transliterated to the aligned Devanagari and read with the Hindi
-  voice, which lands on the same sounds.
+- **Audio.** Every letter and word has a pronunciation clip bundled with
+  the site, so audio plays instantly and works offline. The clips were
+  generated once from a free, keyless text-to-speech service (see
+  `tools/generate-audio.mjs`): Telugu and Punjabi use their own voices,
+  and Odia is transliterated to the aligned Devanagari and read with the
+  Hindi voice, which lands on the same sounds.
 
 ## Your data
 
@@ -45,8 +47,8 @@ or serve the folder:
 python -m http.server 8000    # then visit http://localhost:8000
 ```
 
-Audio needs a network connection, since pronunciation is fetched on
-demand. Everything else works offline.
+Everything, audio included, works offline. A service worker caches the
+site on first visit so repeat loads are instant.
 
 ## Project layout
 
@@ -64,6 +66,3 @@ scripts/app.js       views, routing, audio
 
 The character sets and romanisations were assembled carefully, but a
 native reader of each script is the best check. Corrections are welcome.
-The words in reading lessons are generated from learned letters as
-decoding practice; they are pronounceable combinations rather than a
-curated vocabulary list.

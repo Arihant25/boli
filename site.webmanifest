@@ -1,0 +1,15 @@
+{
+  "name": "Boli — Read what you already speak",
+  "short_name": "Boli",
+  "description": "Learn to read Odia, Telugu, and Punjabi if you already speak them.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6edd8",
+  "theme_color": "#f6edd8",
+  "lang": "en",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -84,16 +84,36 @@
     return 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=' +
       tl + '&q=' + encodeURIComponent(text);
   }
-  var currentAudio = null;
-  function speak(text, langId) {
+  // Resolve a glyph to its clip: the pre-generated local file when we have
+  // one (works offline and on Pages), else the live endpoint as a fallback.
+  function clipSrc(text, langId) {
+    var manifest = window.BOLI_AUDIO;
+    var src = manifest && manifest[langId + '|' + text];
+    if (src) return src;
     var tl = 'hi', say = text;
     if (langId === 'telugu') tl = 'te';
     else if (langId === 'punjabi') tl = 'pa';
-    else if (langId === 'odia') { tl = 'hi'; say = toDevanagari(text); }
+    else if (langId === 'odia') say = toDevanagari(text);
+    return ttsUrl(say, tl);
+  }
+
+  // Cache Audio elements so a clip is fetched once and replays instantly.
+  var audioCache = {};
+  var currentAudio = null;
+  function clipFor(src) {
+    if (!audioCache[src]) { var a = new Audio(); a.preload = 'auto'; a.src = src; audioCache[src] = a; }
+    return audioCache[src];
+  }
+  function preload(text, langId) {
+    try { clipFor(clipSrc(text, langId)).load(); } catch (e) { /* best effort */ }
+  }
+  function speak(text, langId) {
     try {
-      if (currentAudio) currentAudio.pause();
-      currentAudio = new Audio(ttsUrl(say, tl));
-      currentAudio.play().catch(function () { /* a blocked autoplay is fine */ });
+      var a = clipFor(clipSrc(text, langId));
+      if (currentAudio && currentAudio !== a) currentAudio.pause();
+      currentAudio = a;
+      a.currentTime = 0;
+      a.play().catch(function () { /* a blocked autoplay is fine */ });
     } catch (e) { /* audio is a nicety, never a requirement */ }
   }
 
@@ -176,14 +196,17 @@
     var root = h('div', { class: 'view' });
 
     var hero = h('section', { class: 'hero' });
-    hero.appendChild(h('div', { class: 'label eyebrow' }, ['A reading primer']));
-    hero.appendChild(h('h1', null, [
-      h('span', { class: 'say' }, ['बोली']),
-      document.createTextNode('Read what you already speak.')
+    hero.appendChild(h('div', { class: 'hero-text' }, [
+      h('div', { class: 'label eyebrow' }, ['A reading primer']),
+      h('h1', null, [
+        h('span', { class: 'say' }, ['बोली']),
+        document.createTextNode('Read what you already speak.')
+      ]),
+      h('p', { class: 'lede', html:
+        'Plenty of people speak their mother tongue fluently and never learned to read it. ' +
+        '<b>Boli is for them.</b> Learn the letters and the vowel signs a few at a time, then start sounding out words.' })
     ]));
-    hero.appendChild(h('p', { class: 'lede', html:
-      'Plenty of people speak their mother tongue fluently and never learned to read it. ' +
-      '<b>Boli is for them.</b> Learn the letters and the vowel signs a few at a time, then start sounding out words.' }));
+    hero.appendChild(heroArt());
     root.appendChild(hero);
 
     root.appendChild(specimenWall());
@@ -199,6 +222,19 @@
 
     root.appendChild(footer());
     mount(root);
+  }
+
+  // A playful cluster of the three script samples, shown beside the hero
+  // on wider screens so the space to the right of the text is not empty.
+  function heroArt() {
+    var art = h('div', { class: 'hero-art' });
+    DATA.languages.forEach(function (lang) {
+      art.appendChild(h('button', {
+        class: 'art-g script', title: 'Hear ' + lang.name,
+        onclick: function () { speak(lang.sample, lang.id); }
+      }, [lang.sample]));
+    });
+    return art;
   }
 
   // A living type-specimen: two rows of letters from all three scripts
@@ -363,6 +399,14 @@
       else if (step.kind === 'quiz') showQuiz(step.card);
       else if (step.kind === 'read') showRead(step.item);
       else if (step.kind === 'intro') showIntro(step);
+      preloadStep(stepIndex + 1);   // the next clip is ready before it is needed
+    }
+
+    function preloadStep(idx) {
+      var s = steps[idx];
+      if (!s) return;
+      if (s.kind === 'teach' || s.kind === 'quiz') preload(s.card.glyph, langId);
+      else if (s.kind === 'read') preload(s.item.glyph, langId);
     }
 
     function showTeach(card) {
@@ -774,7 +818,7 @@
 
     root.appendChild(h('div', { class: 'about', html:
       '<p>Boli keeps your progress on this device. There is no account and none of it is sent anywhere.</p>' +
-      '<p>Pronunciation is fetched from a public text-to-speech service the moment you tap listen, so audio needs a connection.</p>' +
+      '<p>Every letter and word has its pronunciation bundled with the site, so audio works offline.</p>' +
       '<p>The review uses spaced repetition: letters you miss return sooner and often, the ones you know drift further apart.</p>' }));
 
     root.appendChild(footer());

@@ -3,10 +3,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Boli</title>
-  <meta name="description" content="Learn to read Odia, Telugu and Punjabi when you already speak them.">
-  <meta name="theme-color" content="#f2e9d6">
+
+  <title>Boli: Learn to Read Odia, Telugu and Punjabi</title>
+  <meta name="description" content="Boli teaches you to read Odia, Telugu, and Punjabi (Gurmukhi) if you already speak them. Learn the alphabet and vowel signs with sounds, guided lessons, and spaced repetition. Free, works offline, no account.">
+  <meta name="keywords" content="learn to read Odia, Odia alphabet, learn Telugu script, read Telugu, Gurmukhi, Punjabi alphabet, matra, vowel signs, Indian scripts, spaced repetition, flashcards, mother tongue literacy">
+  <meta name="author" content="Arihant Tripathy">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#f6edd8">
+  <link rel="canonical" href="https://arihant25.github.io/boli/">
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Boli">
+  <meta property="og:title" content="Boli: Read what you already speak">
+  <meta property="og:description" content="Learn to read Odia, Telugu, and Punjabi if you already speak them. The alphabet and vowel signs, with sounds, a lesson at a time.">
+  <meta property="og:url" content="https://arihant25.github.io/boli/">
+  <meta property="og:image" content="https://arihant25.github.io/boli/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Boli. Read what you already speak. Odia, Telugu and Punjabi letters.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Boli: Read what you already speak">
+  <meta name="twitter:description" content="Learn to read Odia, Telugu, and Punjabi if you already speak them.">
+  <meta name="twitter:image" content="https://arihant25.github.io/boli/og-image.png">
+
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
   <link rel="stylesheet" href="styles/main.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Boli",
+    "url": "https://arihant25.github.io/boli/",
+    "description": "Learn to read Odia, Telugu, and Punjabi (Gurmukhi) if you already speak them. The alphabet and vowel signs with sounds, guided lessons, and spaced repetition.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": ["or", "te", "pa", "en"],
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
 </head>
 <body>
   <header class="masthead">
@@ -17,14 +56,36 @@
     <nav class="top-nav" id="topNav"></nav>
   </header>
 
-  <main id="view"><!-- rendered by app.js --></main>
+  <!-- Rendered by app.js. The content below is a static, crawlable
+       fallback shown before the script runs (and if it never does). -->
+  <main id="view">
+    <section class="hero">
+      <div class="hero-text">
+        <div class="label eyebrow">A reading primer</div>
+        <h1>Read what you already speak.</h1>
+        <p class="lede">Boli helps people who speak Odia, Telugu, or Punjabi learn to read
+        their script. Learn the alphabet and the vowel signs a few at a time, each tied to
+        a sound you already know, then start sounding out real words. It is free, works
+        offline, keeps your progress on your device, and needs no account.</p>
+        <p>Pick a script to begin: Odia, Telugu, or Punjabi (Gurmukhi).</p>
+      </div>
+    </section>
+  </main>
 
   <nav class="tab-nav" id="tabNav"></nav>
 
   <script src="scripts/data.js"></script>
+  <script src="scripts/audio-manifest.js"></script>
   <script src="scripts/store.js"></script>
   <script src="scripts/srs.js"></script>
   <script src="scripts/lessons.js"></script>
   <script src="scripts/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () { /* offline caching is optional */ });
+      });
+    }
+  </script>
 </body>
 </html>
