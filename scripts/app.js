@@ -186,9 +186,8 @@
       '<b>Boli is for them.</b> Learn the letters and the vowel signs a few at a time, then start sounding out words.' }));
     root.appendChild(hero);
 
-    root.appendChild(h('div', { class: 'specimen-strip' }, [
-      specimenSample('odia'), specimenSample('telugu'), specimenSample('punjabi')
-    ]));
+    root.appendChild(specimenWall());
+    root.appendChild(h('div', { class: 'wall-caption label' }, ['Tap a letter to hear it']));
 
     root.appendChild(h('div', { class: 'section-head' }, [
       h('h2', null, ['Pick a script']), h('span', { class: 'rule' })
@@ -202,12 +201,32 @@
     mount(root);
   }
 
-  function specimenSample(langId) {
-    var lang = DATA.lang(langId);
-    return h('div', { class: 'sp script' }, [
-      document.createTextNode(lang.sample),
-      h('small', null, [lang.name])
-    ]);
+  // A living type-specimen: two rows of letters from all three scripts
+  // that drift past and can be tapped to hear. Built once per home visit.
+  function specimenWall() {
+    var pool = [];
+    DATA.languages.forEach(function (l) {
+      DATA.chars[l.id].vowels.concat(DATA.chars[l.id].consonants).forEach(function (c) {
+        pool.push({ g: c.glyph, lang: l.id });
+      });
+    });
+    pool = shuffle(pool);
+    var wall = h('div', { class: 'specimen-wall' });
+    wall.appendChild(marqueeRow(pool.slice(0, 22), ''));
+    wall.appendChild(marqueeRow(pool.slice(22, 44), 'rev'));
+    return wall;
+  }
+
+  function marqueeRow(items, dir) {
+    var track = h('div', { class: 'marq-track ' + dir });
+    // Doubled so the loop is seamless as it translates by half its width.
+    items.concat(items).forEach(function (it, i) {
+      track.appendChild(h('button', {
+        class: 'marq-g script' + (i % 6 === 2 ? ' accent' : ''),
+        onclick: function () { speak(it.g, it.lang); }
+      }, [it.g]));
+    });
+    return h('div', { class: 'marq-row' }, [track]);
   }
 
   function languageCard(lang) {

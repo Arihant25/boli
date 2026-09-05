@@ -230,29 +230,42 @@ main {
 }
 .hero .lede b { color: var(--ink); font-weight: 600; }
 
-/* A specimen strip: one letter from each script, unequal on purpose. */
-.specimen-strip {
-  display: flex;
-  align-items: flex-end;
-  gap: clamp(0.6rem, 4vw, 1.8rem);
-  padding: 1.1rem 0 1.6rem;
+/* A living type-specimen: rows of letters drifting past, full-bleed. */
+.specimen-wall {
+  margin: 1.5rem -1.15rem 0.6rem;
+  padding: 1rem 0;
   border-top: 1px solid var(--rule);
   border-bottom: 3px double var(--rule-strong);
-  margin-bottom: 1.8rem;
+  overflow: hidden;
 }
-.specimen-strip .sp { font-family: var(--font-glyph); color: var(--ink); line-height: 1; }
-.specimen-strip .sp:nth-child(1) { font-size: clamp(2.6rem, 15vw, 5rem); }
-.specimen-strip .sp:nth-child(2) { font-size: clamp(2.1rem, 12vw, 4rem); color: var(--accent); }
-.specimen-strip .sp:nth-child(3) { font-size: clamp(2.9rem, 17vw, 5.6rem); }
-.specimen-strip .sp small {
-  display: block;
-  font-family: var(--font-label);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-top: 0.35rem;
+.marq-row { overflow: hidden; }
+.marq-row + .marq-row { margin-top: 0.35rem; }
+.marq-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 4vw, 1.8rem);
+  width: max-content;
+  padding-left: clamp(1rem, 4vw, 1.8rem);
+  animation: marq 46s linear infinite;
+  will-change: transform;
 }
+.marq-track.rev { animation-direction: reverse; }
+.specimen-wall:hover .marq-track { animation-play-state: paused; }
+@keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marq-g {
+  font-family: var(--font-glyph);
+  font-size: clamp(2.1rem, 9vw, 3rem);
+  line-height: 1;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: 0.1rem 0.1rem;
+  flex: none;
+}
+.marq-g.accent { color: var(--accent); }
+.marq-g:active { transform: scale(0.9); }
+.wall-caption { display: block; text-align: center; margin-bottom: 0.4rem; }
+@media (prefers-reduced-motion: reduce) { .marq-track { animation: none; } }
 
 .section-head {
   display: flex;
