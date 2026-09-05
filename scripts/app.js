@@ -255,7 +255,7 @@
 
     root.appendChild(h('div', { class: 'cta-row' }, [
       h('button', { class: 'btn ghost', onclick: function () { go('#/browse/' + langId); } },
-        [iconSpan('sound'), 'All letters']),
+        ['All letters']),
       h('button', { class: 'btn ghost', onclick: function () { go('#/review/' + langId); } },
         [iconSpan('review'), 'Review learned'])
     ]));
